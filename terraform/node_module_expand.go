@@ -1,10 +1,12 @@
 package terraform
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/hashicorp/terraform/addrs"
 	"github.com/hashicorp/terraform/configs"
+	"github.com/zclconf/go-cty/cty"
+	"github.com/zclconf/go-cty/cty/gocty"
 )
 
 // nodeExpandModule represents a module call in the configuration that
@@ -14,6 +16,7 @@ type nodeExpandModule struct {
 	CallerAddr addrs.ModuleInstance
 	Call       addrs.ModuleCall
 	Config     *configs.Module
+	ModuleCall *configs.ModuleCall
 }
 
 var (
@@ -70,10 +73,15 @@ func (n *nodeExpandModule) RemoveIfNotTargeted() bool {
 
 // GraphNodeEvalable
 func (n *nodeExpandModule) EvalTree() EvalNode {
+	// Get the ModuleCall
+	// Do this by using the CallerAddr to find the parent config
+	// And get the modulecall from that config's .modulecalls
+
 	return &evalPrepareModuleExpansion{
 		CallerAddr: n.CallerAddr,
 		Call:       n.Call,
 		Config:     n.Config,
+		ModuleCall: n.ModuleCall,
 	}
 }
 
@@ -81,6 +89,7 @@ type evalPrepareModuleExpansion struct {
 	CallerAddr addrs.ModuleInstance
 	Call       addrs.ModuleCall
 	Config     *configs.Module
+	ModuleCall *configs.ModuleCall
 }
 
 func (n *evalPrepareModuleExpansion) Eval(ctx EvalContext) (interface{}, error) {
@@ -90,7 +99,21 @@ func (n *evalPrepareModuleExpansion) Eval(ctx EvalContext) (interface{}, error) 
 	// FIXME: Once the rest of Terraform Core is ready to support expanding
 	// modules, evaluate the "count" and "for_each" arguments here in a
 	// similar way as in EvalWriteResourceState.
-	log.Printf("[TRACE] evalPrepareModuleExpansion: %s is a singleton", n.CallerAddr.Child(n.Call.Name, addrs.NoKey))
+	fmt.Println(n.ModuleCall)
+	fmt.Println("b")
+	if n.ModuleCall != nil {
+		fmt.Println("hre")
+		// count, _ := evaluateResourceCountExpression(n.ModuleCall.Count, ctx)
+		countVal, _ := ctx.EvaluateExpr(n.ModuleCall.Count, cty.Number, nil)
+		var count int
+		gocty.FromCtyValue(countVal, &count)
+		fmt.Println("The count")
+		fmt.Println(count)
+		ctx.InstanceExpander().SetModuleCount(n.CallerAddr, n.Call, count)
+		return nil, nil
+	}
+	// ctx.InstanceExpander().SetModuleCount(n.CallerAddr, n.Call, 2)
+	// log.Printf("[TRACE] evalPrepareModuleExpansion: %s is a singleton", n.CallerAddr.Child(n.Call.Name, addrs.NoKey))
 	ctx.InstanceExpander().SetModuleSingle(n.CallerAddr, n.Call)
 	return nil, nil
 }

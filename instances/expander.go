@@ -157,6 +157,7 @@ func (e *Expander) GetModuleInstanceRepetitionData(addr addrs.ModuleInstance) Re
 
 	parentMod := e.findModule(addr[:len(addr)-1])
 	lastStep := addr[len(addr)-1]
+	fmt.Println(lastStep)
 	exp, ok := parentMod.moduleCalls[addrs.ModuleCall{Name: lastStep.Name}]
 	if !ok {
 		panic(fmt.Sprintf("no expansion has been registered for %s", addr))
@@ -183,7 +184,11 @@ func (e *Expander) findModule(moduleInstAddr addrs.ModuleInstance) *expanderModu
 	// We expect that all of the modules on the path to our module instance
 	// should already have expansions registered.
 	mod := e.exps
+	fmt.Println("Hello")
+	fmt.Println(moduleInstAddr)
 	for i, step := range moduleInstAddr {
+		fmt.Println(step)
+		fmt.Println(mod.childInstances)
 		next, ok := mod.childInstances[step]
 		if !ok {
 			// Top-down ordering of registration is part of the contract of
