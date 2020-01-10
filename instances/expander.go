@@ -184,12 +184,13 @@ func (e *Expander) findModule(moduleInstAddr addrs.ModuleInstance) *expanderModu
 	// We expect that all of the modules on the path to our module instance
 	// should already have expansions registered.
 	mod := e.exps
-	fmt.Println("Hello")
+	fmt.Println("findModule")
 	fmt.Println(moduleInstAddr)
 	for i, step := range moduleInstAddr {
 		fmt.Println(step)
 		fmt.Println(mod.childInstances)
-		next, ok := mod.childInstances[step]
+		s := addrs.ModuleInstanceStep{Name: step.Name, InstanceKey: addrs.IntKey(i)}
+		next, ok := mod.childInstances[s]
 		if !ok {
 			// Top-down ordering of registration is part of the contract of
 			// Expander, so this is always indicative of a bug in the caller.
