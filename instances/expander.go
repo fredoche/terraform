@@ -285,8 +285,11 @@ func (m *expanderModule) moduleInstances(addr addrs.Module, parentAddr addrs.Mod
 
 func (m *expanderModule) resourceInstances(moduleAddr addrs.Module, resourceAddr addrs.Resource, parentAddr addrs.ModuleInstance) []addrs.AbsResourceInstance {
 	var ret []addrs.AbsResourceInstance
+	fmt.Println("resourceInstances")
 
 	if len(moduleAddr) > 0 {
+		fmt.Println("moduleaddr > 0")
+		fmt.Println(moduleAddr)
 		// We need to traverse through the module levels first, so we can
 		// then iterate resource expansions in the context of each module
 		// path leading to them.
@@ -299,6 +302,8 @@ func (m *expanderModule) resourceInstances(moduleAddr addrs.Module, resourceAddr
 		}
 
 		for step, inst := range m.childInstances {
+			fmt.Println(step.Name)
+			fmt.Println(callName)
 			if step.Name != callName {
 				continue
 			}
@@ -307,6 +312,10 @@ func (m *expanderModule) resourceInstances(moduleAddr addrs.Module, resourceAddr
 		}
 		return ret
 	}
+
+	fmt.Println("after the if")
+	fmt.Println(m.resources)
+	// Hmm, looks like the copies aren't getting resources.....
 
 	exp, ok := m.resources[resourceAddr]
 	if !ok {
