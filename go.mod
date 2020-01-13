@@ -40,7 +40,6 @@ require (
 	github.com/golang/mock v1.3.1
 	github.com/golang/protobuf v1.3.2
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
-	github.com/google/btree v1.0.0 // indirect
 	github.com/google/go-cmp v0.3.1
 	github.com/google/uuid v1.1.1
 	github.com/gophercloud/gophercloud v0.0.0-20190208042652-bc37892e1968
@@ -69,6 +68,7 @@ require (
 	github.com/hashicorp/go-uuid v1.0.1
 	github.com/hashicorp/go-version v1.2.0
 	github.com/hashicorp/hcl v0.0.0-20170504190234-a4b07c25de5f
+	// github.com/hashicorp/hcl v0.0.0-20170504190234-a4b07c25de5f
 	github.com/hashicorp/hcl/v2 v2.3.0
 	github.com/hashicorp/hil v0.0.0-20190212112733-ab17b08d6590
 	github.com/hashicorp/memberlist v0.1.0 // indirect
@@ -137,3 +137,7 @@ require (
 )
 
 go 1.12
+
+replace github.com/hashicorp/hcl/v2 => github.com/fredoche/hcl/v2 v2.3.1-0.20200113163500-9e103af3c8eb
+
+// replace go.larrymyers.com/protoc-gen-twirp_typescript => github.com/rynop/protoc-gen-twirp_typescript master
